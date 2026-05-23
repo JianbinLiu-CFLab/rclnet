@@ -1,5 +1,5 @@
-﻿using Microsoft.Toolkit.HighPerformance.Buffers;
 using Rcl.Interop;
+using System.Buffers;
 using System.Runtime.CompilerServices;
 using System.Text;
 
@@ -39,35 +39,43 @@ internal class RcutilsLogger : IRclLogger
                 InteropHelpers.GetUtf8BufferSize(file) +
                 InteropHelpers.GetUtf8BufferSize(message);
 
-        using var bufferOwner = SpanOwner<byte>.Allocate(bufferSize, AllocationMode.Clear);
-        var buffer = bufferOwner.Span;
-
-        int fileOffset, functionNameOffset, catergoryOffset, messageOffset;
-        var offset = 0;
-
-        fileOffset = offset;
-        offset += Encoding.UTF8.GetBytes(file, buffer[offset..]) + 1;
-
-        functionNameOffset = offset;
-        offset += Encoding.UTF8.GetBytes(functionName, buffer[offset..]) + 1;
-
-        catergoryOffset = offset;
-        offset += Encoding.UTF8.GetBytes(_name, buffer[offset..]) + 1;
-
-        messageOffset = offset;
-        offset += Encoding.UTF8.GetBytes(message, buffer[offset..]) + 1;
-
-        unsafe
+        var rented = ArrayPool<byte>.Shared.Rent(bufferSize);
+        try
         {
-            fixed (byte* pBuf = buffer)
-            {
-                rcutils_log_location_t location;
-                location.line_number = (uint)lineNumber;
-                location.function_name = pBuf + functionNameOffset;
-                location.file_name = pBuf + fileOffset;
+            var buffer = rented.AsSpan(0, bufferSize);
+            buffer.Clear();
 
-                rcutils_log(&location, (int)severity, pBuf + catergoryOffset, pBuf + messageOffset, nint.Zero);
+            int fileOffset, functionNameOffset, catergoryOffset, messageOffset;
+            var offset = 0;
+
+            fileOffset = offset;
+            offset += Encoding.UTF8.GetBytes(file, buffer[offset..]) + 1;
+
+            functionNameOffset = offset;
+            offset += Encoding.UTF8.GetBytes(functionName, buffer[offset..]) + 1;
+
+            catergoryOffset = offset;
+            offset += Encoding.UTF8.GetBytes(_name, buffer[offset..]) + 1;
+
+            messageOffset = offset;
+            offset += Encoding.UTF8.GetBytes(message, buffer[offset..]) + 1;
+
+            unsafe
+            {
+                fixed (byte* pBuf = buffer)
+                {
+                    rcutils_log_location_t location;
+                    location.line_number = (uint)lineNumber;
+                    location.function_name = pBuf + functionNameOffset;
+                    location.file_name = pBuf + fileOffset;
+
+                    rcutils_log(&location, (int)severity, pBuf + catergoryOffset, pBuf + messageOffset, nint.Zero);
+                }
             }
+        }
+        finally
+        {
+            ArrayPool<byte>.Shared.Return(rented);
         }
     }
 }

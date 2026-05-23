@@ -1,4 +1,3 @@
-﻿using Microsoft.Toolkit.HighPerformance.Buffers;
 using Rcl.Interop;
 using Rcl.Qos;
 using Rcl.SafeHandles;
@@ -144,20 +143,16 @@ partial class ParameterService : IParameterService, IDisposable
 
     private ValidationResult NotifyParameterChanging(ReadOnlySpan<ParameterChangingInfo> parameters)
     {
-        SpanOwner<ParameterChangingCallback> callbacksSnapshot;
+        ParameterChangingCallback[] callbacksSnapshot;
         using (ScopedLock.Lock(ref _lock))
         {
-            callbacksSnapshot = SpanOwner<ParameterChangingCallback>.Allocate(_onParameterChangingCallbacks.Count);
-            for (var i = 0; i < _onParameterChangingCallbacks.Count; i++)
-            {
-                callbacksSnapshot.Span[i] = _onParameterChangingCallbacks[i];
-            }
+            callbacksSnapshot = _onParameterChangingCallbacks.ToArray();
         }
 
         // Prevent callbacks from declaring / setting parameters.
         using var gurad = new RecursionGuard(ref _recursionFlag);
         var result = ValidationResult.Success();
-        foreach (var cb in callbacksSnapshot.Span)
+        foreach (var cb in callbacksSnapshot)
         {
             result = cb.Callback(parameters, cb.State);
             if (!result.IsSuccessful)
@@ -180,9 +175,9 @@ partial class ParameterService : IParameterService, IDisposable
             return result;
         }
 
-        using var info = SpanOwner<ParameterChangingInfo>.Allocate(1);
-        info.Span[0] = new(ps.Descriptor, default, value);
-        result = NotifyParameterChanging(info.Span);
+        var info = new ParameterChangingInfo[1];
+        info[0] = new(ps.Descriptor, default, value);
+        result = NotifyParameterChanging(info);
         if (!result.IsSuccessful)
         {
             return result;
@@ -285,7 +280,7 @@ partial class ParameterService : IParameterService, IDisposable
     {
         ValidationResult result;
         var temp = new Dictionary<string, ParameterStore>();
-        using var info = SpanOwner<ParameterChangingInfo>.Allocate(parameters.Count);
+        var info = new ParameterChangingInfo[parameters.Count];
 
         var i = 0;
 
@@ -303,11 +298,11 @@ partial class ParameterService : IParameterService, IDisposable
                 return result;
             }
 
-            info.Span[i++] = new(ps.Descriptor, ps.Value, v);
+            info[i++] = new(ps.Descriptor, ps.Value, v);
             temp[k] = ps;
         }
 
-        result = NotifyParameterChanging(info.Span);
+        result = NotifyParameterChanging(info);
         if (!result.IsSuccessful)
         {
             return result;
@@ -336,9 +331,9 @@ partial class ParameterService : IParameterService, IDisposable
             return result;
         }
 
-        using var info = SpanOwner<ParameterChangingInfo>.Allocate(1);
-        info.Span[0] = new(ps.Descriptor, ps.Value, value);
-        result = NotifyParameterChanging(info.Span);
+        var info = new ParameterChangingInfo[1];
+        info[0] = new(ps.Descriptor, ps.Value, value);
+        result = NotifyParameterChanging(info);
         if (!result.IsSuccessful)
         {
             return result;

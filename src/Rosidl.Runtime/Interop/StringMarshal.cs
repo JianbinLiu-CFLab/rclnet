@@ -1,5 +1,5 @@
-﻿using Microsoft.Toolkit.HighPerformance;
-using Microsoft.Toolkit.HighPerformance.Buffers;
+using System.Collections.Concurrent;
+using System.Runtime.InteropServices;
 using System.Text;
 
 namespace Rosidl.Runtime.Interop
@@ -9,6 +9,13 @@ namespace Rosidl.Runtime.Interop
     /// </summary>
     public static class StringMarshal
     {
+        private static readonly ConcurrentDictionary<string, string> s_stringPool = new();
+
+        private static string Pool(string value)
+        {
+            return s_stringPool.GetOrAdd(value, static x => x);
+        }
+
         /// <summary>
         /// Creates a pooled string from the specified <see langword="string"/>.
         /// </summary>
@@ -16,7 +23,7 @@ namespace Rosidl.Runtime.Interop
         /// <returns>A pooled string instance matching the content of the input string.</returns>
         public static string CreatePooledString(string str)
         {
-            return StringPool.Shared.GetOrAdd(str);
+            return Pool(str);
         }
 
         /// <summary>
@@ -26,7 +33,7 @@ namespace Rosidl.Runtime.Interop
         /// <returns>A pooled string instance matching the content of the input buffer.</returns>
         public static string CreatePooledString(ReadOnlySpan<char> str)
         {
-            return StringPool.Shared.GetOrAdd(str);
+            return Pool(new string(str));
         }
 
         /// <summary>
@@ -46,7 +53,7 @@ namespace Rosidl.Runtime.Interop
             while (buffer[len] != 0) len++;
 
             var span = new Span<byte>(buffer, len);
-            return StringPool.Shared.GetOrAdd(span, encoding ?? Encoding.UTF8);
+            return Pool((encoding ?? Encoding.UTF8).GetString(span));
         }
 
         /// <summary>
@@ -88,7 +95,7 @@ namespace Rosidl.Runtime.Interop
         /// </returns>
         public unsafe static string CreatePooledString(Span<byte> buffer, Encoding encoding)
         {
-            return StringPool.Shared.GetOrAdd(buffer, encoding);
+            return Pool(encoding.GetString(buffer));
         }
 
         /// <summary>
@@ -101,7 +108,7 @@ namespace Rosidl.Runtime.Interop
         /// </returns>
         public unsafe static string CreatePooledString(Span<sbyte> buffer, Encoding encoding)
         {
-            return CreatePooledString(buffer.AsBytes(), encoding);
+            return CreatePooledString(MemoryMarshal.AsBytes(buffer), encoding);
         }
 
         /// <summary>
@@ -188,7 +195,7 @@ namespace Rosidl.Runtime.Interop
         /// </returns>
         public unsafe static string CreateString(ReadOnlySpan<sbyte> buffer, Encoding encoding)
         {
-            return CreateString(buffer.AsBytes(), encoding);
+            return CreateString(MemoryMarshal.AsBytes(buffer), encoding);
         }
 
         /// <summary>

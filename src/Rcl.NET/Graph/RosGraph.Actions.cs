@@ -1,4 +1,3 @@
-﻿using Microsoft.Toolkit.HighPerformance.Buffers;
 using Rosidl.Runtime.Interop;
 using System.Collections.Concurrent;
 
@@ -25,12 +24,12 @@ public partial class RosGraph : IGraphBuilder
             while (_nodesEnumerator.MoveNext())
             {
                 var node = _nodesEnumerator.Current.Value;
-                using var sp = SpanOwner<NameWithType>.Allocate(Math.Max(node.PublisherCount, node.SubscriberCount));
-                var count = GetActionEndpointsByNode(node, sp.Span, true);
-                node.UpdateActionServers(this, sp.Span.Slice(0, count));
+                var sp = new NameWithType[Math.Max(node.PublisherCount, node.SubscriberCount)];
+                var count = GetActionEndpointsByNode(node, sp, true);
+                node.UpdateActionServers(this, sp.AsSpan(0, count));
 
-                count = GetActionEndpointsByNode(node, sp.Span, false);
-                node.UpdateActionClients(this, sp.Span.Slice(0, count));
+                count = GetActionEndpointsByNode(node, sp, false);
+                node.UpdateActionClients(this, sp.AsSpan(0, count));
             }
         }
         finally

@@ -1,7 +1,7 @@
 ﻿@output(CString.g.cs, StructName=CString, ElementType=SByte, NativeStructName=String)@
 @output(U16String.g.cs, StructName=U16String, ElementType=Char, NativeStructName=U16String, Ext)@
 
-using Microsoft.Toolkit.HighPerformance.Buffers;
+using System.Buffers;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Text;
@@ -145,9 +145,17 @@ public unsafe partial struct @StructName@ : IDisposable, IEquatable<@StructName@
     public void CopyFrom(ReadOnlySpan<char> str, Encoding encoding)
     {
         var bufferSize = encoding.GetMaxByteCount(str.Length);
-        using var buffer = SpanOwner<byte>.Allocate(bufferSize);
-        var count = encoding.GetBytes(str, buffer.Span);
-        CopyFrom(MemoryMarshal.Cast<byte, sbyte>(buffer.Span.Slice(0, count)));
+        var rented = ArrayPool<byte>.Shared.Rent(bufferSize);
+        try
+        {
+            var buffer = rented.AsSpan(0, bufferSize);
+            var count = encoding.GetBytes(str, buffer);
+            CopyFrom(MemoryMarshal.Cast<byte, sbyte>(buffer.Slice(0, count)));
+        }
+        finally
+        {
+            ArrayPool<byte>.Shared.Return(rented);
+        }
     }
 
     /// <summary>

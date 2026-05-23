@@ -5,7 +5,10 @@ namespace Rcl;
 /// <summary>
 /// Represents a context for hosting nodes and wait primitives. 
 /// </summary>
-public interface IRclContext : IDisposable, IAsyncDisposable
+public interface IRclContext : IDisposable
+#if !RCLNET_UNITY_PROFILE
+    , IAsyncDisposable
+#endif
 {
     /// <summary>
     /// A context for scheduling executions on current <see cref="IRclContext"/> event loop.

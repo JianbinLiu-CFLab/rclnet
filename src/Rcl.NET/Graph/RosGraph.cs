@@ -1,5 +1,4 @@
-﻿using Microsoft.Toolkit.HighPerformance.Buffers;
-using Rcl.Interop;
+﻿using Rcl.Interop;
 using Rcl.Qos;
 using Rosidl.Runtime.Interop;
 using System.Collections;
@@ -145,7 +144,7 @@ public partial class RosGraph : IGraphBuilder, IObservable<RosGraphEvent>
 
         try
         {
-            using var discoveredNodes = SpanOwner<string>.Allocate((int)names.size.Value);
+            var discoveredNodes = new string[(int)names.size.Value];
 
             for (var i = 0; i < (int)names.size.Value; i++)
             {
@@ -161,7 +160,7 @@ public partial class RosGraph : IGraphBuilder, IObservable<RosGraphEvent>
                     OnAdd(_nodeUpdates, node);
                 }
 
-                discoveredNodes.Span[i] = fqn;
+                discoveredNodes[i] = fqn;
             }
 
             try
@@ -169,7 +168,7 @@ public partial class RosGraph : IGraphBuilder, IObservable<RosGraphEvent>
                 while (_nodesEnumerator.MoveNext())
                 {
                     var (k, node) = _nodesEnumerator.Current;
-                    if (discoveredNodes.Span.IndexOf(k) < 0)
+                    if (Array.IndexOf(discoveredNodes, k) < 0)
                     {
                         if (_nodes.Remove(k, out var v))
                         {
@@ -245,10 +244,10 @@ public partial class RosGraph : IGraphBuilder, IObservable<RosGraphEvent>
                 disableTopicNameDemangling,
                 &nts));
 
-        using var items = SpanOwner<NameWithType>.Allocate((int)nts.names.size.Value);
-        CopyNameAndTypes(&nts, items.Span);
+        var items = new NameWithType[(int)nts.names.size.Value];
+        CopyNameAndTypes(&nts, items);
 
-        foreach (var item in items.Span)
+        foreach (var item in items)
         {
             if (!_topics.TryGetValue(item.Name, out var topic))
             {
@@ -263,7 +262,7 @@ public partial class RosGraph : IGraphBuilder, IObservable<RosGraphEvent>
             {
                 var (k, v) = _topicsEnumerator.Current;
                 var found = false;
-                foreach (var item in items.Span)
+                foreach (var item in items)
                 {
                     if (item.Name == k)
                     {
@@ -317,9 +316,9 @@ public partial class RosGraph : IGraphBuilder, IObservable<RosGraphEvent>
         if (ret == rcl_ret_t.RCL_RET_NODE_NAME_NON_EXISTENT ||
             ret == rcl_ret_t.RCL_RET_OK)
         {
-            using var items = SpanOwner<NameWithType>.Allocate((int)nts.names.size.Value);
-            CopyNameAndTypes(&nts, items.Span);
-            node.UpdateServers(this, items.Span);
+            var items = new NameWithType[(int)nts.names.size.Value];
+            CopyNameAndTypes(&nts, items);
+            node.UpdateServers(this, items);
         }
         else
         {
@@ -335,9 +334,9 @@ public partial class RosGraph : IGraphBuilder, IObservable<RosGraphEvent>
         if (ret == rcl_ret_t.RCL_RET_NODE_NAME_NON_EXISTENT ||
             ret == rcl_ret_t.RCL_RET_OK)
         {
-            using var items = SpanOwner<NameWithType>.Allocate((int)nts.names.size.Value);
-            CopyNameAndTypes(&nts, items.Span);
-            node.UpdateClients(this, items.Span);
+            var items = new NameWithType[(int)nts.names.size.Value];
+            CopyNameAndTypes(&nts, items);
+            node.UpdateClients(this, items);
         }
         else
         {
@@ -366,21 +365,19 @@ public partial class RosGraph : IGraphBuilder, IObservable<RosGraphEvent>
                 disableTopicNameDemangling,
                 &endpoints));
 
-        using (var items = SpanOwner<TopicEndPointDataRef>.Allocate((int)endpoints.size.Value))
+        var items = new TopicEndPointDataRef[(int)endpoints.size.Value];
+        try
         {
-            try
+            for (var i = 0; i < (int)endpoints.size.Value; i++)
             {
-                for (var i = 0; i < (int)endpoints.size.Value; i++)
-                {
-                    // Access info_array through accessor to deal with layout difference between different distros.
-                    items.Span[i] = new(accessor.GetInfoFromArray(endpoints.info_array, i), accessor);
-                }
-                topic.UpdatePublishers(this, items.Span, _nodes);
+                // Access info_array through accessor to deal with layout difference between different distros.
+                items[i] = new(accessor.GetInfoFromArray(endpoints.info_array, i), accessor);
             }
-            finally
-            {
-                rmw_topic_endpoint_info_array_fini(&endpoints, &allocator.Value);
-            }
+            topic.UpdatePublishers(this, items, _nodes);
+        }
+        finally
+        {
+            rmw_topic_endpoint_info_array_fini(&endpoints, &allocator.Value);
         }
 
         RclException.ThrowIfNonSuccess(
@@ -391,20 +388,18 @@ public partial class RosGraph : IGraphBuilder, IObservable<RosGraphEvent>
                 disableTopicNameDemangling,
                 &endpoints));
 
-        using (var items = SpanOwner<TopicEndPointDataRef>.Allocate((int)endpoints.size.Value))
+        items = new TopicEndPointDataRef[(int)endpoints.size.Value];
+        try
         {
-            try
+            for (var i = 0; i < (int)endpoints.size.Value; i++)
             {
-                for (var i = 0; i < (int)endpoints.size.Value; i++)
-                {
-                    items.Span[i] = new(accessor.GetInfoFromArray(endpoints.info_array, i), accessor);
-                }
-                topic.UpdateSubscribers(this, items.Span, _nodes);
+                items[i] = new(accessor.GetInfoFromArray(endpoints.info_array, i), accessor);
             }
-            finally
-            {
-                rmw_topic_endpoint_info_array_fini(&endpoints, &allocator.Value);
-            }
+            topic.UpdateSubscribers(this, items, _nodes);
+        }
+        finally
+        {
+            rmw_topic_endpoint_info_array_fini(&endpoints, &allocator.Value);
         }
     }
 
