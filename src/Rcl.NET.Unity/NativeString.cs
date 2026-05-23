@@ -23,6 +23,7 @@ namespace Rcl.Unity
 
         public static void FillUtf8Buffer(string value, Span<byte> destination)
         {
+            destination.Clear();
             Encoding.UTF8.GetBytes(value, destination);
         }
 

@@ -55,6 +55,18 @@ namespace Rcl.Unity
         }
 
         [StructLayout(LayoutKind.Sequential)]
+        internal struct rcl_publisher_t
+        {
+            public IntPtr impl;
+        }
+
+        [StructLayout(LayoutKind.Sequential)]
+        internal struct rcl_subscription_t
+        {
+            public IntPtr impl;
+        }
+
+        [StructLayout(LayoutKind.Sequential)]
         internal struct rmw_time_t
         {
             public ulong sec;
@@ -94,6 +106,14 @@ namespace Rcl.Unity
             RMW_QOS_POLICY_LIVELINESS_UNKNOWN = 4
         }
 
+        internal enum rmw_unique_network_flow_endpoints_requirement_t : int
+        {
+            RMW_UNIQUE_NETWORK_FLOW_ENDPOINTS_NOT_REQUIRED = 0,
+            RMW_UNIQUE_NETWORK_FLOW_ENDPOINTS_STRICTLY_REQUIRED = 1,
+            RMW_UNIQUE_NETWORK_FLOW_ENDPOINTS_OPTIONALLY_REQUIRED = 2,
+            RMW_UNIQUE_NETWORK_FLOW_ENDPOINTS_SYSTEM_DEFAULT = 3
+        }
+
         [StructLayout(LayoutKind.Sequential)]
         internal struct rmw_qos_profile_t
         {
@@ -119,6 +139,57 @@ namespace Rcl.Unity
             [MarshalAs(UnmanagedType.I1)]
             public bool enable_rosout;
             public rmw_qos_profile_t rosout_qos;
+        }
+
+        [StructLayout(LayoutKind.Sequential)]
+        internal struct rmw_publisher_options_t
+        {
+            public IntPtr rmw_specific_publisher_payload;
+            public rmw_unique_network_flow_endpoints_requirement_t require_unique_network_flow_endpoints;
+        }
+
+        [StructLayout(LayoutKind.Sequential)]
+        internal struct rcl_publisher_options_t
+        {
+            public rmw_qos_profile_t qos;
+            public rcl_allocator_t allocator;
+            public rmw_publisher_options_t rmw_publisher_options;
+            [MarshalAs(UnmanagedType.I1)]
+            public bool disable_loaned_message;
+        }
+
+        [StructLayout(LayoutKind.Sequential)]
+        internal struct rmw_subscription_options_t
+        {
+            public IntPtr rmw_specific_subscription_payload;
+            [MarshalAs(UnmanagedType.I1)]
+            public bool ignore_local_publications;
+            public rmw_unique_network_flow_endpoints_requirement_t require_unique_network_flow_endpoints;
+            public IntPtr content_filter_options;
+        }
+
+        [StructLayout(LayoutKind.Sequential)]
+        internal struct rcl_subscription_options_t
+        {
+            public rmw_qos_profile_t qos;
+            public rcl_allocator_t allocator;
+            public rmw_subscription_options_t rmw_subscription_options;
+            [MarshalAs(UnmanagedType.I1)]
+            public bool disable_loaned_message;
+        }
+
+        [StructLayout(LayoutKind.Sequential)]
+        internal struct rosidl_runtime_c__String
+        {
+            public IntPtr data;
+            public size_t size;
+            public size_t capacity;
+        }
+
+        [StructLayout(LayoutKind.Sequential)]
+        internal struct std_msgs__msg__String
+        {
+            public rosidl_runtime_c__String data;
         }
 
         [StructLayout(LayoutKind.Sequential)]
