@@ -1,0 +1,13 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>netstandard2.1</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>disable</ImplicitUsings>
+    <LangVersion>latest</LangVersion>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <AssemblyName>Rcl.NET.Unity</AssemblyName>
+    <RootNamespace>Rcl.Unity</RootNamespace>
+    <PackageId>Rcl.NET.Unity</PackageId>
+    <Description>Minimal synchronous Unity adapter for ROS 2 rcl.</Description>
+  </PropertyGroup>
+</Project>
