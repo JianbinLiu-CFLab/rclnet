@@ -12,6 +12,8 @@ namespace Rcl.Unity
 
         public RclUnityContext(string[]? args = null)
         {
+            NativeLibraryPath.Configure();
+
             context = NativeRcl.rcl_get_zero_initialized_context();
             var initOptions = NativeRcl.rcl_get_zero_initialized_init_options();
             var initOptionsInitialized = false;
@@ -116,6 +118,7 @@ namespace Rcl.Unity
         {
             var nativeNode = NativeRcl.rcl_get_zero_initialized_node();
             var options = NativeRcl.rcl_node_get_default_options();
+            options.enable_rosout = false;
 
             var nameSize = NativeString.GetUtf8BufferSize(name);
             var namespaceSize = NativeString.GetUtf8BufferSize(namespaceName);
