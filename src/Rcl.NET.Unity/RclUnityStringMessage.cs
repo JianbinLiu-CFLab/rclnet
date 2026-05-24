@@ -1,10 +1,19 @@
+// Copyright (c) 2026 Jianbin Liu.
+// Licensed under the MIT License.
+// See LICENSE in the repository root for license information.
 using System;
 using System.Text;
 
 namespace Rcl.Unity
 {
+    /// <summary>
+    /// Owns native std_msgs/String allocation and conversion helpers.
+    /// </summary>
     internal static unsafe class RclUnityStringMessage
     {
+        /// <summary>
+        /// Allocates a native std_msgs/String message.
+        /// </summary>
         public static NativeTypes.std_msgs__msg__String* Create()
         {
             var message = NativeRcl.std_msgs_msg_string_create();
@@ -16,6 +25,9 @@ namespace Rcl.Unity
             return message;
         }
 
+        /// <summary>
+        /// Destroys a native std_msgs/String message.
+        /// </summary>
         public static void Destroy(NativeTypes.std_msgs__msg__String* message)
         {
             if (message != null)
@@ -24,6 +36,9 @@ namespace Rcl.Unity
             }
         }
 
+        /// <summary>
+        /// Assigns a managed string to a native std_msgs/String message.
+        /// </summary>
         public static void Assign(NativeTypes.std_msgs__msg__String* message, string value)
         {
             if (message == null)
@@ -54,6 +69,9 @@ namespace Rcl.Unity
             }
         }
 
+        /// <summary>
+        /// Reads a managed string from a native std_msgs/String message.
+        /// </summary>
         public static string Read(NativeTypes.std_msgs__msg__String* message)
         {
             if (message == null)

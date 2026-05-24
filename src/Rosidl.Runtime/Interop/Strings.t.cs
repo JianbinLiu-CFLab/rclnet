@@ -1,6 +1,12 @@
-﻿@output(CString.g.cs, StructName=CString, ElementType=SByte, NativeStructName=String)@
+@output(CString.g.cs, StructName=CString, ElementType=SByte, NativeStructName=String)@
 @output(U16String.g.cs, StructName=U16String, ElementType=Char, NativeStructName=U16String, Ext)@
 
+// Modifications Copyright (c) 2026 Jianbin Liu.
+// Licensed under the MIT License.
+// See LICENSE in the repository root for license information.
+//
+// Modifications by Jianbin Liu:
+// - Replaced Microsoft.Toolkit.HighPerformance span owner usage with ArrayPool<T> for Unity-compatible builds.
 using System.Buffers;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
@@ -15,7 +21,7 @@ namespace Rosidl.Runtime.Interop;
 /// The contents of <see cref="@StructName@"/> are initialized to a single null character ('\0').
 /// The string initially has size 0 and capacity 1.
 /// All strings must be null-terminated.
-/// The <see cref="@StructName@"/> structure should be deallocated using <see cref="Dispose()"/> 
+/// The <see cref="@StructName@"/> structure should be deallocated using <see cref="Dispose()"/>
 /// when it is no longer needed.
 /// </remarks>
 [StructLayout(LayoutKind.Sequential)]
@@ -24,7 +30,7 @@ public unsafe partial struct @StructName@ : IDisposable, IEquatable<@StructName@
     private @ElementType@* _data;
     private nuint _size;
     private nuint _capacity;
-    
+
     /// <summary>
     /// Initialize a <see cref="@StructName@"/> structure.
     /// </summary>
@@ -164,7 +170,7 @@ public unsafe partial struct @StructName@ : IDisposable, IEquatable<@StructName@
     /// <param name="str">A <see cref="ReadOnlySpan{Char}"/> buffer to copy from.</param>
     public void CopyFrom(ReadOnlySpan<char> str)
         => CopyFrom(str, Encoding.UTF8);
-    
+
     /// <summary>
     /// Convert the content of the string buffer to a <see ref="String"/> using UTF-8 encoding.
     /// </summary>
@@ -183,7 +189,7 @@ public unsafe partial struct @StructName@ : IDisposable, IEquatable<@StructName@
 @endif@
     /// <inheritdoc/>
     public override bool Equals(object obj) => obj is @StructName@ s ? Equals(s) : false;
-    
+
     /// <inheritdoc/>
     public override int GetHashCode() => HashCode.Combine((nint)_data, _size, _capacity);
 
@@ -194,23 +200,23 @@ public unsafe partial struct @StructName@ : IDisposable, IEquatable<@StructName@
     /// <see langword="true"/> if <see cref="@StructName@"/> structures are equal in size and content, otherwise <see langword="false"/>.
     /// </returns>
     public bool Equals(@StructName@ other) => AreEqual(in this, in other);
-    
+
     /// <summary>
     /// Deallocate the memory of the <see cref="@StructName@"/> structure.
     /// </summary>
     /// <remarks>Calling the function with an already deallocated sequence is a no-op.</remarks>
     public void Dispose() => Finalize(ref this);
-    
+
     /// <summary>
     /// Gets the size of the contents of the string.
     /// </summary>
     public int Size => (int)_size;
-   
+
     /// <summary>
     /// Gets the overall storage size of the string (counting the null terminator).
     /// </summary>
     public int Capacity => (int)_capacity;
-    
+
     /// <summary>
     /// Creates a <see cref="Span{@ElementType@}"/> that represents the internal storage of the string.
     /// </summary>
@@ -221,7 +227,7 @@ public unsafe partial struct @StructName@ : IDisposable, IEquatable<@StructName@
 
     /// <inheritdoc/>
     public static bool operator !=(@StructName@ lhs, @StructName@ rhs) => !(lhs == rhs);
-    
+
     /// <summary>
     /// Copy the content of the <see cref="@StructName@"/> structure from <paramref name="src"/>.
     /// </summary>
@@ -233,7 +239,7 @@ public unsafe partial struct @StructName@ : IDisposable, IEquatable<@StructName@
     {
         ThrowIfNonSuccess(TryCopy(in src, out this));
     }
-    
+
     /// <summary>
     /// Copy the content of the <see cref="@StructName@"/> structure from a buffer containing the null terminated string.
     /// </summary>
@@ -242,7 +248,7 @@ public unsafe partial struct @StructName@ : IDisposable, IEquatable<@StructName@
     {
         ThrowIfNonSuccess(TryAssign(ref this, value));
     }
-    
+
     /// <summary>
     /// Copy the content of the <see cref="@StructName@"/> structure from a buffer containing the string.
     /// </summary>
@@ -285,7 +291,7 @@ public unsafe partial struct @StructName@ : IDisposable, IEquatable<@StructName@
         {
             return _PInvoke(pStr);
         }
-        
+
         [SuppressGCTransition]
         [DllImport("rosidl_runtime_c", EntryPoint = "rosidl_runtime_c__@NativeStructName@__init")]
         static extern bool _PInvoke(@StructName@* str);
@@ -297,7 +303,7 @@ public unsafe partial struct @StructName@ : IDisposable, IEquatable<@StructName@
         {
             _PInvoke(pStr);
         }
-        
+
         [SuppressGCTransition]
         [DllImport("rosidl_runtime_c", EntryPoint = "rosidl_runtime_c__@NativeStructName@__fini")]
         static extern void _PInvoke(@StructName@* str);
@@ -350,7 +356,7 @@ public unsafe partial struct @StructName@ : IDisposable, IEquatable<@StructName@
         {
             return _PInvoke(pStr, value);
         }
-        
+
         [SuppressGCTransition]
         [DllImport("rosidl_runtime_c", EntryPoint = "rosidl_runtime_c__@NativeStructName@__assign")]
         static extern bool _PInvoke(@StructName@* str, @ElementType@* value);
@@ -380,7 +386,7 @@ public unsafe partial struct @StructName@ : IDisposable, IEquatable<@StructName@
         [DllImport("rosidl_runtime_c", EntryPoint = "rosidl_runtime_c__@NativeStructName@__resize")]
         static extern bool _PInvoke(@StructName@* str, nuint n);
     }
-    
+
     /// <summary>
     /// Gets the length of the specified UTF-16 character sequence for which the first null char is determined.
     /// </summary>

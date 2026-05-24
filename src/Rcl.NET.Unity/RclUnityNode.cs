@@ -1,8 +1,14 @@
+// Copyright (c) 2026 Jianbin Liu.
+// Licensed under the MIT License.
+// See LICENSE in the repository root for license information.
 using System;
 using System.Collections.Generic;
 
 namespace Rcl.Unity
 {
+    /// <summary>
+    /// Represents a Unity-scoped ROS 2 node and owns publishers/subscriptions created through it.
+    /// </summary>
     public sealed unsafe class RclUnityNode : IDisposable
     {
         private readonly object mutex = new object();
@@ -14,6 +20,12 @@ namespace Rcl.Unity
         private NativeTypes.rcl_node_t node;
         private bool disposed;
 
+        /// <summary>
+        /// Initializes a node from an already initialized adapter context.
+        /// </summary>
+        /// <param name="context">The context that owns the native node.</param>
+        /// <param name="name">The node name.</param>
+        /// <param name="namespaceName">The node namespace.</param>
         internal RclUnityNode(RclUnityContext context, string name, string namespaceName)
         {
             this.context = context;
@@ -22,10 +34,19 @@ namespace Rcl.Unity
             node = context.InitializeNode(name, namespaceName);
         }
 
+        /// <summary>
+        /// Gets the ROS 2 node name.
+        /// </summary>
         public string Name { get; }
 
+        /// <summary>
+        /// Gets the ROS 2 namespace.
+        /// </summary>
         public string Namespace { get; }
 
+        /// <summary>
+        /// Gets whether the node has already been disposed.
+        /// </summary>
         public bool IsDisposed
         {
             get
@@ -37,12 +58,20 @@ namespace Rcl.Unity
             }
         }
 
+        /// <summary>
+        /// Releases this node through its owning context.
+        /// </summary>
         public void Dispose()
         {
             context.ReleaseNode(this);
             GC.SuppressFinalize(this);
         }
 
+        /// <summary>
+        /// Creates a publisher for std_msgs/String.
+        /// </summary>
+        /// <param name="topicName">The ROS 2 topic name.</param>
+        /// <returns>A string publisher owned by this node.</returns>
         public RclUnityStringPublisher CreateStringPublisher(string topicName)
         {
             ValidateTopicName(topicName);
@@ -57,6 +86,11 @@ namespace Rcl.Unity
             }
         }
 
+        /// <summary>
+        /// Creates a subscription for std_msgs/String.
+        /// </summary>
+        /// <param name="topicName">The ROS 2 topic name.</param>
+        /// <returns>A string subscription owned by this node.</returns>
         public RclUnityStringSubscription CreateStringSubscription(string topicName)
         {
             ValidateTopicName(topicName);
@@ -71,76 +105,121 @@ namespace Rcl.Unity
             }
         }
 
+        /// <summary>
+        /// Creates a publisher for builtin_interfaces/Time.
+        /// </summary>
         public RclUnityPublisher<RclUnityTime> CreateTimePublisher(string topicName)
         {
             return CreatePublisher(topicName, BuiltinTimeMessageBridge.Instance);
         }
 
+        /// <summary>
+        /// Creates a subscription for builtin_interfaces/Time.
+        /// </summary>
         public RclUnitySubscription<RclUnityTime> CreateTimeSubscription(string topicName)
         {
             return CreateSubscription(topicName, BuiltinTimeMessageBridge.Instance);
         }
 
+        /// <summary>
+        /// Creates a publisher for std_msgs/Header.
+        /// </summary>
         public RclUnityPublisher<RclUnityHeader> CreateHeaderPublisher(string topicName)
         {
             return CreatePublisher(topicName, StdHeaderMessageBridge.Instance);
         }
 
+        /// <summary>
+        /// Creates a subscription for std_msgs/Header.
+        /// </summary>
         public RclUnitySubscription<RclUnityHeader> CreateHeaderSubscription(string topicName)
         {
             return CreateSubscription(topicName, StdHeaderMessageBridge.Instance);
         }
 
+        /// <summary>
+        /// Creates a publisher for geometry_msgs/Vector3.
+        /// </summary>
         public RclUnityPublisher<RclUnityVector3> CreateVector3Publisher(string topicName)
         {
             return CreatePublisher(topicName, GeometryVector3MessageBridge.Instance);
         }
 
+        /// <summary>
+        /// Creates a subscription for geometry_msgs/Vector3.
+        /// </summary>
         public RclUnitySubscription<RclUnityVector3> CreateVector3Subscription(string topicName)
         {
             return CreateSubscription(topicName, GeometryVector3MessageBridge.Instance);
         }
 
+        /// <summary>
+        /// Creates a publisher for geometry_msgs/Quaternion.
+        /// </summary>
         public RclUnityPublisher<RclUnityQuaternion> CreateQuaternionPublisher(string topicName)
         {
             return CreatePublisher(topicName, GeometryQuaternionMessageBridge.Instance);
         }
 
+        /// <summary>
+        /// Creates a subscription for geometry_msgs/Quaternion.
+        /// </summary>
         public RclUnitySubscription<RclUnityQuaternion> CreateQuaternionSubscription(string topicName)
         {
             return CreateSubscription(topicName, GeometryQuaternionMessageBridge.Instance);
         }
 
+        /// <summary>
+        /// Creates a publisher for geometry_msgs/Point.
+        /// </summary>
         public RclUnityPublisher<RclUnityPoint> CreatePointPublisher(string topicName)
         {
             return CreatePublisher(topicName, GeometryPointMessageBridge.Instance);
         }
 
+        /// <summary>
+        /// Creates a subscription for geometry_msgs/Point.
+        /// </summary>
         public RclUnitySubscription<RclUnityPoint> CreatePointSubscription(string topicName)
         {
             return CreateSubscription(topicName, GeometryPointMessageBridge.Instance);
         }
 
+        /// <summary>
+        /// Creates a publisher for geometry_msgs/Pose.
+        /// </summary>
         public RclUnityPublisher<RclUnityPose> CreatePosePublisher(string topicName)
         {
             return CreatePublisher(topicName, GeometryPoseMessageBridge.Instance);
         }
 
+        /// <summary>
+        /// Creates a subscription for geometry_msgs/Pose.
+        /// </summary>
         public RclUnitySubscription<RclUnityPose> CreatePoseSubscription(string topicName)
         {
             return CreateSubscription(topicName, GeometryPoseMessageBridge.Instance);
         }
 
+        /// <summary>
+        /// Initializes a native std_msgs/String publisher.
+        /// </summary>
         internal NativeTypes.rcl_publisher_t InitializeStringPublisher(string topicName)
         {
             return InitializePublisher(topicName, NativeRcl.std_msgs_msg_string_get_type_support());
         }
 
+        /// <summary>
+        /// Initializes a native std_msgs/String subscription.
+        /// </summary>
         internal NativeTypes.rcl_subscription_t InitializeStringSubscription(string topicName)
         {
             return InitializeSubscription(topicName, NativeRcl.std_msgs_msg_string_get_type_support());
         }
 
+        /// <summary>
+        /// Initializes a native publisher for a typed message bridge.
+        /// </summary>
         internal NativeTypes.rcl_publisher_t InitializePublisher(string topicName, IntPtr typeSupport)
         {
             if (typeSupport == IntPtr.Zero)
@@ -167,6 +246,9 @@ namespace Rcl.Unity
             return nativePublisher;
         }
 
+        /// <summary>
+        /// Initializes a native subscription for a typed message bridge.
+        /// </summary>
         internal NativeTypes.rcl_subscription_t InitializeSubscription(string topicName, IntPtr typeSupport)
         {
             if (typeSupport == IntPtr.Zero)
@@ -203,6 +285,9 @@ namespace Rcl.Unity
             }
         }
 
+        /// <summary>
+        /// Publishes a std_msgs/String value through an owned string publisher.
+        /// </summary>
         internal void PublishString(RclUnityStringPublisher publisher, string data)
         {
             if (data == null)
@@ -222,6 +307,9 @@ namespace Rcl.Unity
             }
         }
 
+        /// <summary>
+        /// Attempts to take a std_msgs/String value from an owned string subscription.
+        /// </summary>
         internal bool TryTakeString(RclUnityStringSubscription subscription, out string? data)
         {
             lock (mutex)
@@ -236,6 +324,9 @@ namespace Rcl.Unity
             }
         }
 
+        /// <summary>
+        /// Removes and disposes an owned string publisher.
+        /// </summary>
         internal void ReleasePublisher(RclUnityStringPublisher publisher)
         {
             lock (mutex)
@@ -252,6 +343,9 @@ namespace Rcl.Unity
             }
         }
 
+        /// <summary>
+        /// Removes and disposes an owned string subscription.
+        /// </summary>
         internal void ReleaseSubscription(RclUnityStringSubscription subscription)
         {
             lock (mutex)
@@ -268,6 +362,9 @@ namespace Rcl.Unity
             }
         }
 
+        /// <summary>
+        /// Publishes a bridge-backed message through an owned typed publisher.
+        /// </summary>
         internal void Publish<T>(RclUnityPublisher<T> publisher, T message)
         {
             lock (mutex)
@@ -282,6 +379,9 @@ namespace Rcl.Unity
             }
         }
 
+        /// <summary>
+        /// Attempts to take a bridge-backed message from an owned typed subscription.
+        /// </summary>
         internal bool TryTake<T>(RclUnitySubscription<T> subscription, out T message)
         {
             lock (mutex)
@@ -296,6 +396,9 @@ namespace Rcl.Unity
             }
         }
 
+        /// <summary>
+        /// Removes and disposes an owned typed publisher.
+        /// </summary>
         internal void ReleasePublisher<T>(RclUnityPublisher<T> publisher)
         {
             lock (mutex)
@@ -312,6 +415,9 @@ namespace Rcl.Unity
             }
         }
 
+        /// <summary>
+        /// Removes and disposes an owned typed subscription.
+        /// </summary>
         internal void ReleaseSubscription<T>(RclUnitySubscription<T> subscription)
         {
             lock (mutex)
@@ -328,6 +434,9 @@ namespace Rcl.Unity
             }
         }
 
+        /// <summary>
+        /// Disposes the node and all children without calling back into the owning context.
+        /// </summary>
         internal void DisposeFromContext()
         {
             lock (mutex)
@@ -377,6 +486,9 @@ namespace Rcl.Unity
             GC.SuppressFinalize(this);
         }
 
+        /// <summary>
+        /// Creates and tracks a typed publisher backed by a native message bridge.
+        /// </summary>
         private RclUnityPublisher<T> CreatePublisher<T>(string topicName, NativeMessageBridge<T> bridge)
         {
             ValidateTopicName(topicName);
@@ -391,6 +503,9 @@ namespace Rcl.Unity
             }
         }
 
+        /// <summary>
+        /// Creates and tracks a typed subscription backed by a native message bridge.
+        /// </summary>
         private RclUnitySubscription<T> CreateSubscription<T>(string topicName, NativeMessageBridge<T> bridge)
         {
             ValidateTopicName(topicName);
@@ -405,6 +520,9 @@ namespace Rcl.Unity
             }
         }
 
+        /// <summary>
+        /// Validates a topic name before handing it to rcl.
+        /// </summary>
         private static void ValidateTopicName(string topicName)
         {
             if (string.IsNullOrEmpty(topicName))
@@ -413,6 +531,9 @@ namespace Rcl.Unity
             }
         }
 
+        /// <summary>
+        /// Throws when the node has already been disposed.
+        /// </summary>
         private void ThrowIfDisposed()
         {
             if (disposed)

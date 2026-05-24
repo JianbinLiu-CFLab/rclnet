@@ -1,4 +1,12 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
+  <!--
+    Modifications Copyright (c) 2026 Jianbin Liu.
+    Licensed under the MIT License.
+
+    Modifications by Jianbin Liu:
+    - Removed Microsoft.Toolkit.HighPerformance dependency for Unity-compatible runtime builds.
+    - Kept the generated-message runtime on modern .NET target frameworks.
+  -->
 
   <PropertyGroup>
     <TargetFrameworks>net8.0;net9.0;net10.0</TargetFrameworks>

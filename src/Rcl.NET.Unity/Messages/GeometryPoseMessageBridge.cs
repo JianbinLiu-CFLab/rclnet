@@ -1,7 +1,16 @@
+// Copyright (c) 2026 Jianbin Liu.
+// Licensed under the MIT License.
+// See LICENSE in the repository root for license information.
 namespace Rcl.Unity
 {
+    /// <summary>
+    /// Bridges geometry_msgs/Pose between managed <see cref="RclUnityPose"/> and the native C message.
+    /// </summary>
     internal sealed unsafe class GeometryPoseMessageBridge : NativeMessageBridge<RclUnityPose>
     {
+        /// <summary>
+        /// Gets the singleton bridge instance for geometry_msgs/Pose.
+        /// </summary>
         public static readonly GeometryPoseMessageBridge Instance = new GeometryPoseMessageBridge();
 
         private GeometryPoseMessageBridge()
@@ -9,6 +18,7 @@ namespace Rcl.Unity
         {
         }
 
+        /// <inheritdoc/>
         public override void* Create()
         {
             var message = NativeRcl.geometry_msgs_msg_pose_create();
@@ -20,11 +30,13 @@ namespace Rcl.Unity
             return message;
         }
 
+        /// <inheritdoc/>
         public override void Destroy(void* message)
         {
             NativeRcl.geometry_msgs_msg_pose_destroy((NativeTypes.geometry_msgs__msg__Pose*)message);
         }
 
+        /// <inheritdoc/>
         public override void Write(void* message, RclUnityPose value)
         {
             ThrowIfNull(message, nameof(message));
@@ -38,6 +50,7 @@ namespace Rcl.Unity
             native->orientation.w = value.Orientation.W;
         }
 
+        /// <inheritdoc/>
         public override RclUnityPose Read(void* message)
         {
             ThrowIfNull(message, nameof(message));

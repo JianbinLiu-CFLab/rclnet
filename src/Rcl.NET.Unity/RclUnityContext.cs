@@ -1,8 +1,14 @@
+// Copyright (c) 2026 Jianbin Liu.
+// Licensed under the MIT License.
+// See LICENSE in the repository root for license information.
 using System;
 using System.Collections.Generic;
 
 namespace Rcl.Unity
 {
+    /// <summary>
+    /// Owns the native rcl context used by the Unity adapter and creates Unity-scoped ROS 2 nodes.
+    /// </summary>
     public sealed unsafe class RclUnityContext : IDisposable
     {
         private readonly object mutex = new object();
@@ -10,6 +16,10 @@ namespace Rcl.Unity
         private NativeTypes.rcl_context_t context;
         private bool disposed;
 
+        /// <summary>
+        /// Initializes rcl for the current Unity adapter process.
+        /// </summary>
+        /// <param name="args">Optional ROS 2 command-line arguments to pass to rcl_init.</param>
         public RclUnityContext(string[]? args = null)
         {
             NativeLibraryPath.Configure();
@@ -50,6 +60,9 @@ namespace Rcl.Unity
             }
         }
 
+        /// <summary>
+        /// Gets whether this context has already been disposed.
+        /// </summary>
         public bool IsDisposed
         {
             get
@@ -61,6 +74,12 @@ namespace Rcl.Unity
             }
         }
 
+        /// <summary>
+        /// Creates a ROS 2 node owned by this context.
+        /// </summary>
+        /// <param name="name">The ROS 2 node name.</param>
+        /// <param name="namespaceName">The ROS 2 namespace for the node.</param>
+        /// <returns>A node that should be disposed directly or through the context.</returns>
         public RclUnityNode CreateNode(string name, string namespaceName = "/")
         {
             if (string.IsNullOrEmpty(name))
@@ -83,6 +102,9 @@ namespace Rcl.Unity
             }
         }
 
+        /// <summary>
+        /// Shuts down all owned nodes and finalizes the native rcl context.
+        /// </summary>
         public void Dispose()
         {
             RclUnityNode[] nodesToDispose;
@@ -114,6 +136,12 @@ namespace Rcl.Unity
             GC.SuppressFinalize(this);
         }
 
+        /// <summary>
+        /// Initializes a native node handle using this context.
+        /// </summary>
+        /// <param name="name">The node name encoded for rcl.</param>
+        /// <param name="namespaceName">The node namespace encoded for rcl.</param>
+        /// <returns>An initialized native node handle.</returns>
         internal NativeTypes.rcl_node_t InitializeNode(string name, string namespaceName)
         {
             var nativeNode = NativeRcl.rcl_get_zero_initialized_node();
@@ -149,6 +177,10 @@ namespace Rcl.Unity
             }
         }
 
+        /// <summary>
+        /// Removes and disposes a node that was created by this context.
+        /// </summary>
+        /// <param name="node">The node to release.</param>
         internal void ReleaseNode(RclUnityNode node)
         {
             lock (mutex)
@@ -163,6 +195,11 @@ namespace Rcl.Unity
             }
         }
 
+        /// <summary>
+        /// Calls rcl_init with optional command-line arguments.
+        /// </summary>
+        /// <param name="args">Arguments to pass to rcl_init.</param>
+        /// <param name="initOptionsPointer">Initialized rcl init options.</param>
         private void InitializeContext(string[] args, NativeTypes.rcl_init_options_t* initOptionsPointer)
         {
             fixed (NativeTypes.rcl_context_t* contextPointer = &context)
@@ -186,6 +223,9 @@ namespace Rcl.Unity
             }
         }
 
+        /// <summary>
+        /// Throws when the context has already been disposed.
+        /// </summary>
         private void ThrowIfDisposed()
         {
             if (disposed)
@@ -194,6 +234,9 @@ namespace Rcl.Unity
             }
         }
 
+        /// <summary>
+        /// Finalizes a partially initialized context during constructor failure without masking the original error.
+        /// </summary>
         private void BestEffortContextFini()
         {
             try

@@ -1,3 +1,9 @@
+// Modifications Copyright (c) 2026 Jianbin Liu.
+// Licensed under the MIT License.
+// See LICENSE in the repository root for license information.
+//
+// Modifications by Jianbin Liu:
+// - Replaced Microsoft.Toolkit.HighPerformance SpanOwner usage with managed arrays for Unity-compatible builds.
 using Rosidl.Runtime.Interop;
 using System.Collections.Concurrent;
 

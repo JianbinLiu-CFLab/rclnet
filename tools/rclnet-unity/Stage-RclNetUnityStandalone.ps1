@@ -1,3 +1,8 @@
+# Copyright (c) 2026 Jianbin Liu.
+# Licensed under the MIT License.
+# See LICENSE in the repository root for license information.
+#
+# Stages the lightweight Rcl.NET.Unity adapter and its Windows ROS 2 runtime closure into a Unity project.
 Param(
     [Parameter(Mandatory=$true)]
     [string]$JazzyRoot,
@@ -14,6 +19,7 @@ Param(
 $ErrorActionPreference = 'Stop'
 Set-StrictMode -Version Latest
 
+# Resolves a required path and throws an actionable error when it is missing.
 function Resolve-RequiredPath {
     Param(
         [Parameter(Mandatory=$true)]
@@ -30,6 +36,7 @@ function Resolve-RequiredPath {
     return (Resolve-Path -LiteralPath $Path).Path
 }
 
+# Adds an existing directory to the ordered search list without duplicating entries.
 function Add-ExistingDirectory {
     Param(
         [System.Collections.Generic.List[string]]$Directories,
@@ -46,6 +53,7 @@ function Add-ExistingDirectory {
     }
 }
 
+# Locates dumpbin from the active developer shell or common Visual Studio 2026/2022 installations.
 function Find-Dumpbin {
     $command = Get-Command dumpbin -ErrorAction SilentlyContinue
     if ($command -ne $null) {
@@ -69,6 +77,7 @@ function Find-Dumpbin {
     return $null
 }
 
+# Returns true for Windows runtime DLLs that should be provided by the operating system or MSVC runtime.
 function Test-SystemDll {
     Param(
         [Parameter(Mandatory=$true)]
@@ -84,6 +93,7 @@ function Test-SystemDll {
         return $true
     }
 
+    # System DLL allow-list used to avoid copying Windows-provided dependencies into the Unity project.
     $systemDlls = @(
         'ADVAPI32.DLL',
         'BCRYPT.DLL',
@@ -115,6 +125,7 @@ function Test-SystemDll {
     return $systemDlls -contains $upper
 }
 
+# Reads native DLL dependencies from dumpbin /DEPENDENTS output.
 function Get-DumpbinDependencies {
     Param(
         [Parameter(Mandatory=$true)]
@@ -185,6 +196,7 @@ if (Test-Path -LiteralPath $optPath -PathType Container) {
     }
 }
 
+# Indexes available native DLLs by lowercase file name for deterministic dependency resolution.
 $dllIndex = @{}
 foreach ($directory in $allowedDirectories) {
     foreach ($dll in Get-ChildItem -LiteralPath $directory -File -Filter '*.dll' -ErrorAction SilentlyContinue) {
@@ -195,6 +207,7 @@ foreach ($directory in $allowedDirectories) {
     }
 }
 
+# Seed DLLs are the known ROS 2 runtime roots required by the current Unity adapter message profile.
 $seedDlls = @(
     'rcl.dll',
     'rcutils.dll',

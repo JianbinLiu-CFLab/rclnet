@@ -1,4 +1,12 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
+  <!--
+    Modifications Copyright (c) 2026 Jianbin Liu.
+    Licensed under the MIT License.
+
+    Modifications by Jianbin Liu:
+    - Added the RCLNET_UNITY_PROFILE build constant for Unity-compatible builds.
+    - Removed Microsoft.Toolkit.HighPerformance dependency from the Unity-compatible path.
+  -->
 
   <PropertyGroup>
     <TargetFrameworks>net8.0;net9.0;net10.0</TargetFrameworks>
@@ -44,13 +52,13 @@
     <GenerateDocumentationFile>True</GenerateDocumentationFile>
   </PropertyGroup>
 
-	
+
 	<ItemGroup>
 		<ProjectReference Include="..\Rosidl.Runtime\Rosidl.Runtime.csproj" />
 	</ItemGroup>
 
 	<Import Project="build\Rcl.NET.props" />
-	<!-- TODO: only generate changed interface packages, 
+	<!-- TODO: only generate changed interface packages,
 				because generating many packages can take considerably long time,
 				maybe not here but maybe by ros2cs generator code -->
     <Import Project="build\Rcl.NET.targets" />
@@ -64,6 +72,6 @@
 		<None Include="$(Ros2csSourcePublish)\*.dll;$(Ros2csSourcePublish)\ros2cs.runtimeconfig.json;$(Ros2csSourcePublish)\ros2cs.deps.json"
 			  Pack="True" PackagePath="tools\$(Ros2csBundleTfm)\ros2cs\" />
 	</ItemGroup>
-	
+
 	<!-- ../Directory.Build.props & .targets are also imported to gather the source ros2cs -->
 </Project>

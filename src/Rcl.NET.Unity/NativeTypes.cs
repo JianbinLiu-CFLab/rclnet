@@ -1,16 +1,31 @@
+// Copyright (c) 2026 Jianbin Liu.
+// Licensed under the MIT License.
+// See LICENSE in the repository root for license information.
 using System;
 using System.Runtime.InteropServices;
 
 namespace Rcl.Unity
 {
+    /// <summary>
+    /// Contains native struct and enum layouts used by the Unity adapter's P/Invoke surface.
+    /// </summary>
     internal static unsafe class NativeTypes
     {
+        /// <summary>
+        /// Represents the native C size_t value used by ROS 2 C APIs.
+        /// </summary>
         [StructLayout(LayoutKind.Sequential)]
         internal struct size_t
         {
+            /// <summary>
+            /// Stores the platform-sized unsigned value.
+            /// </summary>
             public UIntPtr Value;
         }
 
+        /// <summary>
+        /// Mirrors rcutils_allocator_t.
+        /// </summary>
         [StructLayout(LayoutKind.Sequential)]
         internal struct rcutils_allocator_t
         {
@@ -21,24 +36,36 @@ namespace Rcl.Unity
             public IntPtr state;
         }
 
+        /// <summary>
+        /// Mirrors rcl_allocator_t.
+        /// </summary>
         [StructLayout(LayoutKind.Sequential)]
         internal struct rcl_allocator_t
         {
             public rcutils_allocator_t Value;
         }
 
+        /// <summary>
+        /// Mirrors rcl_arguments_t for context initialization.
+        /// </summary>
         [StructLayout(LayoutKind.Sequential)]
         internal struct rcl_arguments_t
         {
             public IntPtr impl;
         }
 
+        /// <summary>
+        /// Mirrors rcl_init_options_t.
+        /// </summary>
         [StructLayout(LayoutKind.Sequential)]
         internal struct rcl_init_options_t
         {
             public IntPtr impl;
         }
 
+        /// <summary>
+        /// Mirrors rcl_context_t for the native ROS 2 context.
+        /// </summary>
         [StructLayout(LayoutKind.Sequential)]
         internal struct rcl_context_t
         {
@@ -47,6 +74,9 @@ namespace Rcl.Unity
             public ulong instance_id_storage;
         }
 
+        /// <summary>
+        /// Mirrors rcl_node_t for native node ownership.
+        /// </summary>
         [StructLayout(LayoutKind.Sequential)]
         internal struct rcl_node_t
         {
@@ -54,18 +84,27 @@ namespace Rcl.Unity
             public IntPtr impl;
         }
 
+        /// <summary>
+        /// Mirrors rcl_publisher_t for native publisher ownership.
+        /// </summary>
         [StructLayout(LayoutKind.Sequential)]
         internal struct rcl_publisher_t
         {
             public IntPtr impl;
         }
 
+        /// <summary>
+        /// Mirrors rcl_subscription_t for native subscription ownership.
+        /// </summary>
         [StructLayout(LayoutKind.Sequential)]
         internal struct rcl_subscription_t
         {
             public IntPtr impl;
         }
 
+        /// <summary>
+        /// Mirrors rmw_time_t for QoS duration fields.
+        /// </summary>
         [StructLayout(LayoutKind.Sequential)]
         internal struct rmw_time_t
         {
@@ -73,6 +112,9 @@ namespace Rcl.Unity
             public ulong nsec;
         }
 
+        /// <summary>
+        /// Mirrors rmw_qos_history_policy_t.
+        /// </summary>
         internal enum rmw_qos_history_policy_t : int
         {
             RMW_QOS_POLICY_HISTORY_SYSTEM_DEFAULT,
@@ -81,6 +123,9 @@ namespace Rcl.Unity
             RMW_QOS_POLICY_HISTORY_UNKNOWN
         }
 
+        /// <summary>
+        /// Mirrors rmw_qos_reliability_policy_t.
+        /// </summary>
         internal enum rmw_qos_reliability_policy_t : int
         {
             RMW_QOS_POLICY_RELIABILITY_SYSTEM_DEFAULT,
@@ -89,6 +134,9 @@ namespace Rcl.Unity
             RMW_QOS_POLICY_RELIABILITY_UNKNOWN
         }
 
+        /// <summary>
+        /// Mirrors rmw_qos_durability_policy_t.
+        /// </summary>
         internal enum rmw_qos_durability_policy_t : int
         {
             RMW_QOS_POLICY_DURABILITY_SYSTEM_DEFAULT,
@@ -97,6 +145,9 @@ namespace Rcl.Unity
             RMW_QOS_POLICY_DURABILITY_UNKNOWN
         }
 
+        /// <summary>
+        /// Mirrors rmw_qos_liveliness_policy_t.
+        /// </summary>
         internal enum rmw_qos_liveliness_policy_t : int
         {
             RMW_QOS_POLICY_LIVELINESS_SYSTEM_DEFAULT = 0,
@@ -106,6 +157,9 @@ namespace Rcl.Unity
             RMW_QOS_POLICY_LIVELINESS_UNKNOWN = 4
         }
 
+        /// <summary>
+        /// Mirrors rmw_unique_network_flow_endpoints_requirement_t.
+        /// </summary>
         internal enum rmw_unique_network_flow_endpoints_requirement_t : int
         {
             RMW_UNIQUE_NETWORK_FLOW_ENDPOINTS_NOT_REQUIRED = 0,
@@ -114,6 +168,9 @@ namespace Rcl.Unity
             RMW_UNIQUE_NETWORK_FLOW_ENDPOINTS_SYSTEM_DEFAULT = 3
         }
 
+        /// <summary>
+        /// Mirrors rmw_qos_profile_t for publisher and subscription creation.
+        /// </summary>
         [StructLayout(LayoutKind.Sequential)]
         internal struct rmw_qos_profile_t
         {
@@ -129,6 +186,9 @@ namespace Rcl.Unity
             public bool avoid_ros_namespace_conventions;
         }
 
+        /// <summary>
+        /// Mirrors rcl_node_options_t.
+        /// </summary>
         [StructLayout(LayoutKind.Sequential)]
         internal struct rcl_node_options_t
         {
@@ -141,6 +201,9 @@ namespace Rcl.Unity
             public rmw_qos_profile_t rosout_qos;
         }
 
+        /// <summary>
+        /// Mirrors rmw_publisher_options_t.
+        /// </summary>
         [StructLayout(LayoutKind.Sequential)]
         internal struct rmw_publisher_options_t
         {
@@ -148,6 +211,9 @@ namespace Rcl.Unity
             public rmw_unique_network_flow_endpoints_requirement_t require_unique_network_flow_endpoints;
         }
 
+        /// <summary>
+        /// Mirrors rcl_publisher_options_t.
+        /// </summary>
         [StructLayout(LayoutKind.Sequential)]
         internal struct rcl_publisher_options_t
         {
@@ -158,6 +224,9 @@ namespace Rcl.Unity
             public bool disable_loaned_message;
         }
 
+        /// <summary>
+        /// Mirrors rmw_subscription_options_t.
+        /// </summary>
         [StructLayout(LayoutKind.Sequential)]
         internal struct rmw_subscription_options_t
         {
@@ -168,6 +237,9 @@ namespace Rcl.Unity
             public IntPtr content_filter_options;
         }
 
+        /// <summary>
+        /// Mirrors rcl_subscription_options_t.
+        /// </summary>
         [StructLayout(LayoutKind.Sequential)]
         internal struct rcl_subscription_options_t
         {
@@ -178,6 +250,9 @@ namespace Rcl.Unity
             public bool disable_loaned_message;
         }
 
+        /// <summary>
+        /// Mirrors rosidl_runtime_c__String.
+        /// </summary>
         [StructLayout(LayoutKind.Sequential)]
         internal struct rosidl_runtime_c__String
         {
@@ -186,12 +261,18 @@ namespace Rcl.Unity
             public size_t capacity;
         }
 
+        /// <summary>
+        /// Mirrors std_msgs/msg/String.
+        /// </summary>
         [StructLayout(LayoutKind.Sequential)]
         internal struct std_msgs__msg__String
         {
             public rosidl_runtime_c__String data;
         }
 
+        /// <summary>
+        /// Mirrors builtin_interfaces/msg/Time.
+        /// </summary>
         [StructLayout(LayoutKind.Sequential)]
         internal struct builtin_interfaces__msg__Time
         {
@@ -199,6 +280,9 @@ namespace Rcl.Unity
             public uint nanosec;
         }
 
+        /// <summary>
+        /// Mirrors std_msgs/msg/Header.
+        /// </summary>
         [StructLayout(LayoutKind.Sequential)]
         internal struct std_msgs__msg__Header
         {
@@ -206,6 +290,9 @@ namespace Rcl.Unity
             public rosidl_runtime_c__String frame_id;
         }
 
+        /// <summary>
+        /// Mirrors geometry_msgs/msg/Vector3.
+        /// </summary>
         [StructLayout(LayoutKind.Sequential)]
         internal struct geometry_msgs__msg__Vector3
         {
@@ -214,6 +301,9 @@ namespace Rcl.Unity
             public double z;
         }
 
+        /// <summary>
+        /// Mirrors geometry_msgs/msg/Quaternion.
+        /// </summary>
         [StructLayout(LayoutKind.Sequential)]
         internal struct geometry_msgs__msg__Quaternion
         {
@@ -223,6 +313,9 @@ namespace Rcl.Unity
             public double w;
         }
 
+        /// <summary>
+        /// Mirrors geometry_msgs/msg/Point.
+        /// </summary>
         [StructLayout(LayoutKind.Sequential)]
         internal struct geometry_msgs__msg__Point
         {
@@ -231,6 +324,9 @@ namespace Rcl.Unity
             public double z;
         }
 
+        /// <summary>
+        /// Mirrors geometry_msgs/msg/Pose.
+        /// </summary>
         [StructLayout(LayoutKind.Sequential)]
         internal struct geometry_msgs__msg__Pose
         {
@@ -238,6 +334,9 @@ namespace Rcl.Unity
             public geometry_msgs__msg__Quaternion orientation;
         }
 
+        /// <summary>
+        /// Mirrors rcutils_error_string_t.
+        /// </summary>
         [StructLayout(LayoutKind.Sequential)]
         internal unsafe struct rcutils_error_string_t
         {

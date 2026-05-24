@@ -1,9 +1,18 @@
+// Copyright (c) 2026 Jianbin Liu.
+// Licensed under the MIT License.
+// See LICENSE in the repository root for license information.
 using System;
 
 namespace Rcl.Unity
 {
+    /// <summary>
+    /// Converts rcl return codes and rcutils error state into adapter exceptions.
+    /// </summary>
     internal static unsafe class RclError
     {
+        /// <summary>
+        /// Throws an exception when an rcl operation did not return success.
+        /// </summary>
         public static void ThrowIfNonSuccess(RclReturnCode returnCode, string operation)
         {
             if (returnCode == RclReturnCode.Ok)
@@ -14,6 +23,9 @@ namespace Rcl.Unity
             throw new RclUnityException(CreateMessage(returnCode, operation));
         }
 
+        /// <summary>
+        /// Creates a diagnostic message for an rcl operation result.
+        /// </summary>
         public static string CreateMessage(RclReturnCode returnCode, string operation)
         {
             var nativeMessage = TryTakeNativeError();
@@ -25,6 +37,9 @@ namespace Rcl.Unity
             return $"{operation} failed with {(int)returnCode}: {nativeMessage}";
         }
 
+        /// <summary>
+        /// Reads and clears the current native rcutils error message, if present.
+        /// </summary>
         private static string? TryTakeNativeError()
         {
             try

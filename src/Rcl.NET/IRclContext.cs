@@ -1,9 +1,15 @@
-﻿using Rcl.Logging;
+// Modifications Copyright (c) 2026 Jianbin Liu.
+// Licensed under the MIT License.
+// See LICENSE in the repository root for license information.
+//
+// Modifications by Jianbin Liu:
+// - Made IAsyncDisposable conditional so Unity netstandard2.1 builds can consume the interface.
+using Rcl.Logging;
 
 namespace Rcl;
 
 /// <summary>
-/// Represents a context for hosting nodes and wait primitives. 
+/// Represents a context for hosting nodes and wait primitives.
 /// </summary>
 public interface IRclContext : IDisposable
 #if !RCLNET_UNITY_PROFILE
@@ -45,11 +51,11 @@ public interface IRclContext : IDisposable
     /// and the <see cref="NodeOptions.Clock"/> and <see cref="NodeOptions.ClockQos"/> options are ignored.
     /// <para>
     /// The node will become a 'consumer' of the clock, that is, no subscription of /clock topic will be created and the node will never try to
-    /// set time override of the clock, regardless of the type of the clock. 
+    /// set time override of the clock, regardless of the type of the clock.
     /// </para>
     /// <para>
     /// This can be useful if you want your application to have a single node to be the producer of the clock, so that other nodes can also use the
-    /// same external time source without subscribing to the /clock topic. 
+    /// same external time source without subscribing to the /clock topic.
     /// </para>
     /// </remarks>
     /// <param name="name">Name of the node.</param>

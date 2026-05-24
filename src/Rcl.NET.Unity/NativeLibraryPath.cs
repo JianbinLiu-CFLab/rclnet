@@ -1,3 +1,6 @@
+// Copyright (c) 2026 Jianbin Liu.
+// Licensed under the MIT License.
+// See LICENSE in the repository root for license information.
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -5,11 +8,24 @@ using System.Reflection;
 
 namespace Rcl.Unity
 {
+    /// <summary>
+    /// Configures native DLL and ament resource lookup paths for a staged Unity Player runtime.
+    /// </summary>
     internal static class NativeLibraryPath
     {
+        /// <summary>
+        /// Guards one-time environment mutation.
+        /// </summary>
         private static readonly object Mutex = new object();
+
+        /// <summary>
+        /// Tracks whether the process environment has already been configured.
+        /// </summary>
         private static bool configured;
 
+        /// <summary>
+        /// Adds Unity plugin and StreamingAssets paths to the process environment once.
+        /// </summary>
         public static void Configure()
         {
             lock (Mutex)
@@ -39,6 +55,9 @@ namespace Rcl.Unity
             }
         }
 
+        /// <summary>
+        /// Returns likely directories containing staged native ROS 2 DLLs.
+        /// </summary>
         private static IEnumerable<string> GetCandidateDirectories()
         {
             var assemblyLocation = typeof(NativeLibraryPath).GetTypeInfo().Assembly.Location;
@@ -60,6 +79,9 @@ namespace Rcl.Unity
             }
         }
 
+        /// <summary>
+        /// Returns likely ament prefix directories staged beside the Unity Player.
+        /// </summary>
         private static IEnumerable<string> GetCandidateAmentPrefixes()
         {
             var assemblyLocation = typeof(NativeLibraryPath).GetTypeInfo().Assembly.Location;
@@ -80,6 +102,9 @@ namespace Rcl.Unity
             }
         }
 
+        /// <summary>
+        /// Prepends a directory to an environment path variable if it is not already present.
+        /// </summary>
         private static void PrependEnvironmentPath(string variableName, string directory)
         {
             var currentPath = Environment.GetEnvironmentVariable(variableName) ?? string.Empty;
