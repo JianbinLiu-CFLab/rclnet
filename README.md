@@ -267,7 +267,24 @@ The adapter should grow profile by profile, not by importing the full ROS 2 mess
 
 ## License
 
-This fork keeps the upstream license.
+This fork remains under the MIT License.
+
+The original upstream copyright notice is preserved:
+
+```text
+Copyright (c) 2022-2024 noelex
+```
+
+Unity adapter modifications in this fork are additionally attributed as:
+
+```text
+Modifications Copyright (c) 2026 Jianbin Liu
+```
+
+Do not remove upstream notices when copying or redistributing this fork. Some
+vendored ROS 2 interface packages under `modules/` also carry their own license
+files and notices; those remain separate and should be kept with any redistributed
+substantial portion.
 
 See:
 

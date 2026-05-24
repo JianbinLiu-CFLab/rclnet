@@ -8,6 +8,13 @@
     <AssemblyName>Rcl.NET.Unity</AssemblyName>
     <RootNamespace>Rcl.Unity</RootNamespace>
     <PackageId>Rcl.NET.Unity</PackageId>
+    <Product>Rcl.NET Unity Adapter</Product>
     <Description>Minimal synchronous Unity adapter for ROS 2 rcl.</Description>
+    <Authors>Jianbin Liu; noelex@outlook.jp</Authors>
+    <Company>CFLab</Company>
+    <PackageProjectUrl>https://github.com/JianbinLiu-CFLab/rclnet</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/JianbinLiu-CFLab/rclnet.git</RepositoryUrl>
+    <Copyright>Modifications Copyright (c) 2026 Jianbin Liu; portions Copyright (c) 2022-2024 noelex</Copyright>
+    <PackageTags>ros, ros2, rcl, unity, rclnet, jazzy</PackageTags>
   </PropertyGroup>
 </Project>
