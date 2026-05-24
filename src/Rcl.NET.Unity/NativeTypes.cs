@@ -193,6 +193,52 @@ namespace Rcl.Unity
         }
 
         [StructLayout(LayoutKind.Sequential)]
+        internal struct builtin_interfaces__msg__Time
+        {
+            public int sec;
+            public uint nanosec;
+        }
+
+        [StructLayout(LayoutKind.Sequential)]
+        internal struct std_msgs__msg__Header
+        {
+            public builtin_interfaces__msg__Time stamp;
+            public rosidl_runtime_c__String frame_id;
+        }
+
+        [StructLayout(LayoutKind.Sequential)]
+        internal struct geometry_msgs__msg__Vector3
+        {
+            public double x;
+            public double y;
+            public double z;
+        }
+
+        [StructLayout(LayoutKind.Sequential)]
+        internal struct geometry_msgs__msg__Quaternion
+        {
+            public double x;
+            public double y;
+            public double z;
+            public double w;
+        }
+
+        [StructLayout(LayoutKind.Sequential)]
+        internal struct geometry_msgs__msg__Point
+        {
+            public double x;
+            public double y;
+            public double z;
+        }
+
+        [StructLayout(LayoutKind.Sequential)]
+        internal struct geometry_msgs__msg__Pose
+        {
+            public geometry_msgs__msg__Point position;
+            public geometry_msgs__msg__Quaternion orientation;
+        }
+
+        [StructLayout(LayoutKind.Sequential)]
         internal unsafe struct rcutils_error_string_t
         {
             public fixed sbyte str[1024];

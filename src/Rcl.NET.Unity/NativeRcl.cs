@@ -129,6 +129,60 @@ namespace Rcl.Unity
         [DllImport("std_msgs__rosidl_generator_c", EntryPoint = "std_msgs__msg__String__destroy", CallingConvention = CallingConvention.Cdecl)]
         public static extern void std_msgs_msg_string_destroy(NativeTypes.std_msgs__msg__String* message);
 
+        [DllImport("builtin_interfaces__rosidl_typesupport_c", EntryPoint = "rosidl_typesupport_c__get_message_type_support_handle__builtin_interfaces__msg__Time", CallingConvention = CallingConvention.Cdecl)]
+        public static extern IntPtr builtin_interfaces_msg_time_get_type_support();
+
+        [DllImport("builtin_interfaces__rosidl_generator_c", EntryPoint = "builtin_interfaces__msg__Time__create", CallingConvention = CallingConvention.Cdecl)]
+        public static extern NativeTypes.builtin_interfaces__msg__Time* builtin_interfaces_msg_time_create();
+
+        [DllImport("builtin_interfaces__rosidl_generator_c", EntryPoint = "builtin_interfaces__msg__Time__destroy", CallingConvention = CallingConvention.Cdecl)]
+        public static extern void builtin_interfaces_msg_time_destroy(NativeTypes.builtin_interfaces__msg__Time* message);
+
+        [DllImport("std_msgs__rosidl_typesupport_c", EntryPoint = "rosidl_typesupport_c__get_message_type_support_handle__std_msgs__msg__Header", CallingConvention = CallingConvention.Cdecl)]
+        public static extern IntPtr std_msgs_msg_header_get_type_support();
+
+        [DllImport("std_msgs__rosidl_generator_c", EntryPoint = "std_msgs__msg__Header__create", CallingConvention = CallingConvention.Cdecl)]
+        public static extern NativeTypes.std_msgs__msg__Header* std_msgs_msg_header_create();
+
+        [DllImport("std_msgs__rosidl_generator_c", EntryPoint = "std_msgs__msg__Header__destroy", CallingConvention = CallingConvention.Cdecl)]
+        public static extern void std_msgs_msg_header_destroy(NativeTypes.std_msgs__msg__Header* message);
+
+        [DllImport("geometry_msgs__rosidl_typesupport_c", EntryPoint = "rosidl_typesupport_c__get_message_type_support_handle__geometry_msgs__msg__Vector3", CallingConvention = CallingConvention.Cdecl)]
+        public static extern IntPtr geometry_msgs_msg_vector3_get_type_support();
+
+        [DllImport("geometry_msgs__rosidl_generator_c", EntryPoint = "geometry_msgs__msg__Vector3__create", CallingConvention = CallingConvention.Cdecl)]
+        public static extern NativeTypes.geometry_msgs__msg__Vector3* geometry_msgs_msg_vector3_create();
+
+        [DllImport("geometry_msgs__rosidl_generator_c", EntryPoint = "geometry_msgs__msg__Vector3__destroy", CallingConvention = CallingConvention.Cdecl)]
+        public static extern void geometry_msgs_msg_vector3_destroy(NativeTypes.geometry_msgs__msg__Vector3* message);
+
+        [DllImport("geometry_msgs__rosidl_typesupport_c", EntryPoint = "rosidl_typesupport_c__get_message_type_support_handle__geometry_msgs__msg__Quaternion", CallingConvention = CallingConvention.Cdecl)]
+        public static extern IntPtr geometry_msgs_msg_quaternion_get_type_support();
+
+        [DllImport("geometry_msgs__rosidl_generator_c", EntryPoint = "geometry_msgs__msg__Quaternion__create", CallingConvention = CallingConvention.Cdecl)]
+        public static extern NativeTypes.geometry_msgs__msg__Quaternion* geometry_msgs_msg_quaternion_create();
+
+        [DllImport("geometry_msgs__rosidl_generator_c", EntryPoint = "geometry_msgs__msg__Quaternion__destroy", CallingConvention = CallingConvention.Cdecl)]
+        public static extern void geometry_msgs_msg_quaternion_destroy(NativeTypes.geometry_msgs__msg__Quaternion* message);
+
+        [DllImport("geometry_msgs__rosidl_typesupport_c", EntryPoint = "rosidl_typesupport_c__get_message_type_support_handle__geometry_msgs__msg__Point", CallingConvention = CallingConvention.Cdecl)]
+        public static extern IntPtr geometry_msgs_msg_point_get_type_support();
+
+        [DllImport("geometry_msgs__rosidl_generator_c", EntryPoint = "geometry_msgs__msg__Point__create", CallingConvention = CallingConvention.Cdecl)]
+        public static extern NativeTypes.geometry_msgs__msg__Point* geometry_msgs_msg_point_create();
+
+        [DllImport("geometry_msgs__rosidl_generator_c", EntryPoint = "geometry_msgs__msg__Point__destroy", CallingConvention = CallingConvention.Cdecl)]
+        public static extern void geometry_msgs_msg_point_destroy(NativeTypes.geometry_msgs__msg__Point* message);
+
+        [DllImport("geometry_msgs__rosidl_typesupport_c", EntryPoint = "rosidl_typesupport_c__get_message_type_support_handle__geometry_msgs__msg__Pose", CallingConvention = CallingConvention.Cdecl)]
+        public static extern IntPtr geometry_msgs_msg_pose_get_type_support();
+
+        [DllImport("geometry_msgs__rosidl_generator_c", EntryPoint = "geometry_msgs__msg__Pose__create", CallingConvention = CallingConvention.Cdecl)]
+        public static extern NativeTypes.geometry_msgs__msg__Pose* geometry_msgs_msg_pose_create();
+
+        [DllImport("geometry_msgs__rosidl_generator_c", EntryPoint = "geometry_msgs__msg__Pose__destroy", CallingConvention = CallingConvention.Cdecl)]
+        public static extern void geometry_msgs_msg_pose_destroy(NativeTypes.geometry_msgs__msg__Pose* message);
+
         [DllImport("rosidl_runtime_c", EntryPoint = "rosidl_runtime_c__String__assignn", CallingConvention = CallingConvention.Cdecl)]
         [return: MarshalAs(UnmanagedType.I1)]
         public static extern bool rosidl_runtime_c_string_assignn(

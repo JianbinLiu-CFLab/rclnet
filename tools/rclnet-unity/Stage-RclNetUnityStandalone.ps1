@@ -156,6 +156,14 @@ $pluginRoot = Join-Path $assetsPath 'Plugins'
 $nativeRoot = Join-Path $pluginRoot 'x86_64'
 $streamingPrefix = Join-Path $assetsPath 'StreamingAssets\rclnet_ros2'
 $resourceDestination = Join-Path $streamingPrefix 'share\ament_index\resource_index'
+if (Test-Path -LiteralPath $nativeRoot) {
+    Remove-Item -LiteralPath $nativeRoot -Recurse -Force
+}
+
+if (Test-Path -LiteralPath $streamingPrefix) {
+    Remove-Item -LiteralPath $streamingPrefix -Recurse -Force
+}
+
 New-Item -ItemType Directory -Force -Path $pluginRoot, $nativeRoot, $resourceDestination | Out-Null
 
 $managedDestination = Join-Path $pluginRoot 'Rcl.NET.Unity.dll'
@@ -198,13 +206,24 @@ $seedDlls = @(
     'rosidl_runtime_c.dll',
     'rosidl_typesupport_c.dll',
     'rosidl_typesupport_interface.dll',
+    'builtin_interfaces__rosidl_generator_c.dll',
+    'builtin_interfaces__rosidl_typesupport_c.dll',
+    'builtin_interfaces__rosidl_typesupport_fastrtps_c.dll',
+    'builtin_interfaces__rosidl_typesupport_introspection_c.dll',
     'std_msgs__rosidl_generator_c.dll',
     'std_msgs__rosidl_typesupport_c.dll',
     'std_msgs__rosidl_typesupport_cpp.dll',
     'std_msgs__rosidl_typesupport_fastrtps_c.dll',
     'std_msgs__rosidl_typesupport_fastrtps_cpp.dll',
     'std_msgs__rosidl_typesupport_introspection_c.dll',
-    'std_msgs__rosidl_typesupport_introspection_cpp.dll'
+    'std_msgs__rosidl_typesupport_introspection_cpp.dll',
+    'geometry_msgs__rosidl_generator_c.dll',
+    'geometry_msgs__rosidl_typesupport_c.dll',
+    'geometry_msgs__rosidl_typesupport_cpp.dll',
+    'geometry_msgs__rosidl_typesupport_fastrtps_c.dll',
+    'geometry_msgs__rosidl_typesupport_fastrtps_cpp.dll',
+    'geometry_msgs__rosidl_typesupport_introspection_c.dll',
+    'geometry_msgs__rosidl_typesupport_introspection_cpp.dll'
 )
 
 $dumpbin = Find-Dumpbin

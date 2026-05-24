@@ -7,8 +7,10 @@ namespace Rcl.Unity
     {
         private readonly object mutex = new object();
         private readonly RclUnityContext context;
-        private readonly HashSet<RclUnityStringPublisher> publishers = new HashSet<RclUnityStringPublisher>();
-        private readonly HashSet<RclUnityStringSubscription> subscriptions = new HashSet<RclUnityStringSubscription>();
+        private readonly HashSet<RclUnityStringPublisher> stringPublishers = new HashSet<RclUnityStringPublisher>();
+        private readonly HashSet<RclUnityStringSubscription> stringSubscriptions = new HashSet<RclUnityStringSubscription>();
+        private readonly HashSet<IRclUnityNodeEntity> publishers = new HashSet<IRclUnityNodeEntity>();
+        private readonly HashSet<IRclUnityNodeEntity> subscriptions = new HashSet<IRclUnityNodeEntity>();
         private NativeTypes.rcl_node_t node;
         private bool disposed;
 
@@ -50,7 +52,7 @@ namespace Rcl.Unity
                 ThrowIfDisposed();
 
                 var publisher = new RclUnityStringPublisher(this, topicName);
-                publishers.Add(publisher);
+                stringPublishers.Add(publisher);
                 return publisher;
             }
         }
@@ -64,24 +66,93 @@ namespace Rcl.Unity
                 ThrowIfDisposed();
 
                 var subscription = new RclUnityStringSubscription(this, topicName);
-                subscriptions.Add(subscription);
+                stringSubscriptions.Add(subscription);
                 return subscription;
             }
         }
 
+        public RclUnityPublisher<RclUnityTime> CreateTimePublisher(string topicName)
+        {
+            return CreatePublisher(topicName, BuiltinTimeMessageBridge.Instance);
+        }
+
+        public RclUnitySubscription<RclUnityTime> CreateTimeSubscription(string topicName)
+        {
+            return CreateSubscription(topicName, BuiltinTimeMessageBridge.Instance);
+        }
+
+        public RclUnityPublisher<RclUnityHeader> CreateHeaderPublisher(string topicName)
+        {
+            return CreatePublisher(topicName, StdHeaderMessageBridge.Instance);
+        }
+
+        public RclUnitySubscription<RclUnityHeader> CreateHeaderSubscription(string topicName)
+        {
+            return CreateSubscription(topicName, StdHeaderMessageBridge.Instance);
+        }
+
+        public RclUnityPublisher<RclUnityVector3> CreateVector3Publisher(string topicName)
+        {
+            return CreatePublisher(topicName, GeometryVector3MessageBridge.Instance);
+        }
+
+        public RclUnitySubscription<RclUnityVector3> CreateVector3Subscription(string topicName)
+        {
+            return CreateSubscription(topicName, GeometryVector3MessageBridge.Instance);
+        }
+
+        public RclUnityPublisher<RclUnityQuaternion> CreateQuaternionPublisher(string topicName)
+        {
+            return CreatePublisher(topicName, GeometryQuaternionMessageBridge.Instance);
+        }
+
+        public RclUnitySubscription<RclUnityQuaternion> CreateQuaternionSubscription(string topicName)
+        {
+            return CreateSubscription(topicName, GeometryQuaternionMessageBridge.Instance);
+        }
+
+        public RclUnityPublisher<RclUnityPoint> CreatePointPublisher(string topicName)
+        {
+            return CreatePublisher(topicName, GeometryPointMessageBridge.Instance);
+        }
+
+        public RclUnitySubscription<RclUnityPoint> CreatePointSubscription(string topicName)
+        {
+            return CreateSubscription(topicName, GeometryPointMessageBridge.Instance);
+        }
+
+        public RclUnityPublisher<RclUnityPose> CreatePosePublisher(string topicName)
+        {
+            return CreatePublisher(topicName, GeometryPoseMessageBridge.Instance);
+        }
+
+        public RclUnitySubscription<RclUnityPose> CreatePoseSubscription(string topicName)
+        {
+            return CreateSubscription(topicName, GeometryPoseMessageBridge.Instance);
+        }
+
         internal NativeTypes.rcl_publisher_t InitializeStringPublisher(string topicName)
         {
+            return InitializePublisher(topicName, NativeRcl.std_msgs_msg_string_get_type_support());
+        }
+
+        internal NativeTypes.rcl_subscription_t InitializeStringSubscription(string topicName)
+        {
+            return InitializeSubscription(topicName, NativeRcl.std_msgs_msg_string_get_type_support());
+        }
+
+        internal NativeTypes.rcl_publisher_t InitializePublisher(string topicName, IntPtr typeSupport)
+        {
+            if (typeSupport == IntPtr.Zero)
+            {
+                throw new RclUnityException("Message type support lookup returned null.");
+            }
+
             var nativePublisher = NativeRcl.rcl_get_zero_initialized_publisher();
             var options = NativeRcl.rcl_publisher_get_default_options();
             var topicSize = NativeString.GetUtf8BufferSize(topicName);
             Span<byte> topicBuffer = stackalloc byte[topicSize];
             NativeString.FillUtf8Buffer(topicName, topicBuffer);
-            var typeSupport = NativeRcl.std_msgs_msg_string_get_type_support();
-
-            if (typeSupport == IntPtr.Zero)
-            {
-                throw new RclUnityException("std_msgs/String type support lookup returned null.");
-            }
 
             fixed (byte* topicPointer = topicBuffer)
             fixed (NativeTypes.rcl_node_t* nodePointer = &node)
@@ -96,19 +167,18 @@ namespace Rcl.Unity
             return nativePublisher;
         }
 
-        internal NativeTypes.rcl_subscription_t InitializeStringSubscription(string topicName)
+        internal NativeTypes.rcl_subscription_t InitializeSubscription(string topicName, IntPtr typeSupport)
         {
+            if (typeSupport == IntPtr.Zero)
+            {
+                throw new RclUnityException("Message type support lookup returned null.");
+            }
+
             var nativeSubscription = NativeRcl.rcl_get_zero_initialized_subscription();
             var options = NativeRcl.rcl_subscription_get_default_options();
             var topicSize = NativeString.GetUtf8BufferSize(topicName);
             Span<byte> topicBuffer = stackalloc byte[topicSize];
             NativeString.FillUtf8Buffer(topicName, topicBuffer);
-            var typeSupport = NativeRcl.std_msgs_msg_string_get_type_support();
-
-            if (typeSupport == IntPtr.Zero)
-            {
-                throw new RclUnityException("std_msgs/String type support lookup returned null.");
-            }
 
             try
             {
@@ -143,7 +213,7 @@ namespace Rcl.Unity
             lock (mutex)
             {
                 ThrowIfDisposed();
-                if (!publishers.Contains(publisher))
+                if (!stringPublishers.Contains(publisher))
                 {
                     throw new ObjectDisposedException(nameof(RclUnityStringPublisher));
                 }
@@ -157,7 +227,7 @@ namespace Rcl.Unity
             lock (mutex)
             {
                 ThrowIfDisposed();
-                if (!subscriptions.Contains(subscription))
+                if (!stringSubscriptions.Contains(subscription))
                 {
                     throw new ObjectDisposedException(nameof(RclUnityStringSubscription));
                 }
@@ -167,6 +237,66 @@ namespace Rcl.Unity
         }
 
         internal void ReleasePublisher(RclUnityStringPublisher publisher)
+        {
+            lock (mutex)
+            {
+                if (disposed || !stringPublishers.Remove(publisher))
+                {
+                    return;
+                }
+
+                fixed (NativeTypes.rcl_node_t* nodePointer = &node)
+                {
+                    publisher.DisposeFromNode(nodePointer);
+                }
+            }
+        }
+
+        internal void ReleaseSubscription(RclUnityStringSubscription subscription)
+        {
+            lock (mutex)
+            {
+                if (disposed || !stringSubscriptions.Remove(subscription))
+                {
+                    return;
+                }
+
+                fixed (NativeTypes.rcl_node_t* nodePointer = &node)
+                {
+                    subscription.DisposeFromNode(nodePointer);
+                }
+            }
+        }
+
+        internal void Publish<T>(RclUnityPublisher<T> publisher, T message)
+        {
+            lock (mutex)
+            {
+                ThrowIfDisposed();
+                if (!publishers.Contains(publisher))
+                {
+                    throw new ObjectDisposedException(nameof(RclUnityPublisher<T>));
+                }
+
+                publisher.PublishFromNode(message);
+            }
+        }
+
+        internal bool TryTake<T>(RclUnitySubscription<T> subscription, out T message)
+        {
+            lock (mutex)
+            {
+                ThrowIfDisposed();
+                if (!subscriptions.Contains(subscription))
+                {
+                    throw new ObjectDisposedException(nameof(RclUnitySubscription<T>));
+                }
+
+                return subscription.TryTakeFromNode(out message);
+            }
+        }
+
+        internal void ReleasePublisher<T>(RclUnityPublisher<T> publisher)
         {
             lock (mutex)
             {
@@ -182,7 +312,7 @@ namespace Rcl.Unity
             }
         }
 
-        internal void ReleaseSubscription(RclUnityStringSubscription subscription)
+        internal void ReleaseSubscription<T>(RclUnitySubscription<T> subscription)
         {
             lock (mutex)
             {
@@ -216,12 +346,26 @@ namespace Rcl.Unity
 
                     subscriptions.Clear();
 
+                    foreach (var subscription in stringSubscriptions)
+                    {
+                        subscription.DisposeFromNode(nodePointer);
+                    }
+
+                    stringSubscriptions.Clear();
+
                     foreach (var publisher in publishers)
                     {
                         publisher.DisposeFromNode(nodePointer);
                     }
 
                     publishers.Clear();
+
+                    foreach (var publisher in stringPublishers)
+                    {
+                        publisher.DisposeFromNode(nodePointer);
+                    }
+
+                    stringPublishers.Clear();
 
                     RclError.ThrowIfNonSuccess(NativeRcl.rcl_node_fini(nodePointer), "rcl_node_fini");
                 }
@@ -231,6 +375,34 @@ namespace Rcl.Unity
             }
 
             GC.SuppressFinalize(this);
+        }
+
+        private RclUnityPublisher<T> CreatePublisher<T>(string topicName, NativeMessageBridge<T> bridge)
+        {
+            ValidateTopicName(topicName);
+
+            lock (mutex)
+            {
+                ThrowIfDisposed();
+
+                var publisher = new RclUnityPublisher<T>(this, topicName, bridge);
+                publishers.Add(publisher);
+                return publisher;
+            }
+        }
+
+        private RclUnitySubscription<T> CreateSubscription<T>(string topicName, NativeMessageBridge<T> bridge)
+        {
+            ValidateTopicName(topicName);
+
+            lock (mutex)
+            {
+                ThrowIfDisposed();
+
+                var subscription = new RclUnitySubscription<T>(this, topicName, bridge);
+                subscriptions.Add(subscription);
+                return subscription;
+            }
         }
 
         private static void ValidateTopicName(string topicName)
