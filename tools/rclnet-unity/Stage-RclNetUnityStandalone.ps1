@@ -218,7 +218,6 @@ $seedDlls = @(
     'rmw_fastrtps_cpp.dll',
     'rosidl_runtime_c.dll',
     'rosidl_typesupport_c.dll',
-    'rosidl_typesupport_interface.dll',
     'builtin_interfaces__rosidl_generator_c.dll',
     'builtin_interfaces__rosidl_typesupport_c.dll',
     'builtin_interfaces__rosidl_typesupport_fastrtps_c.dll',
